@@ -1,6 +1,7 @@
 package api
 
 import (
+	"net/http"
 	"time"
 
 	logger "finances.jordis.golang/application/services"
@@ -12,6 +13,7 @@ import (
 	mail_service "finances.jordis.golang/services/mail"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/time/rate"
 	"gorm.io/gorm"
 )
 
@@ -33,8 +35,20 @@ type App struct {
 	DB *gorm.DB
 }
 
+var limiter = rate.NewLimiter(1, 5)
+
+func rateLimiter(c *gin.Context) {
+	if !limiter.Allow() {
+		c.JSON(http.StatusTooManyRequests, gin.H{"error": "too many requests"})
+		c.Abort()
+		return
+	}
+	c.Next()
+}
 func Router(app *App) *gin.Engine {
+
 	router := gin.Default()
+	router.Use(rateLimiter)
 
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"}, // origen de tu frontend

@@ -10,10 +10,11 @@ func ResolveTransactionCommandHandler(command ResolveTransactionCommand, transac
 	if err != nil {
 		return err
 	}
-	err = transactionsRepository.MarkAsPayed(command.TransactionID)
+	err = usersRepository.UpdateActorsCurrentBalance(command.UserID, transaction.PayedBy.Val, transaction.Amount.Val)
 	if err != nil {
 		return err
 	}
-	return usersRepository.UpdateActorsCurrentBalance(command.UserID, transaction.PayedBy.Val, transaction.Amount.Val)
+
+	return transactionsRepository.MarkAsPayed(command.TransactionID)
 
 }

@@ -62,11 +62,11 @@ func (app *App) CreateTransactionHandler(c *gin.Context) {
 		UserID:      userId,
 	}
 
-	_, err = createtransaction.CreateTransactionCommandHandler(command, app.UsersGroupsRepo, app.TransactionsRepo)
+	_, err = createtransaction.CreateTransactionCommandHandler(command, app.UsersGroupsRepo, app.TransactionsRepo, app.UsersRepo)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to create transaction",
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
 		})
 		return
 	}
@@ -97,7 +97,7 @@ func (app *App) ResolveTransaction(c *gin.Context) {
 	err := resolve_transaction.ResolveTransactionCommandHandler(command, app.TransactionsRepo, app.UsersRepo)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to mark transaction as payed",
+			"error": err.Error(),
 		})
 		return
 	}

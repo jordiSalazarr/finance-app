@@ -10,6 +10,7 @@ var (
 )
 
 var categoryMap = map[string]bool{
+	"Income":        true,
 	"Alimentación":  true,
 	"Transporte":    true,
 	"Vivienda":      true,

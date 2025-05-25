@@ -4,10 +4,12 @@ import (
 	"fmt"
 
 	"finances.jordis.golang/domain/members"
+	domainUsers "finances.jordis.golang/domain/members/users"
 	domainTransaction "finances.jordis.golang/domain/moves/transactions"
+	transactionVals "finances.jordis.golang/domain/moves/transactions/value-objects"
 )
 
-func CreateTransactionCommandHandler(command CreateTransactionsCommand, usersGroupsRepository members.UsersGroupRepository, transactionsRepository domainTransaction.TransactionsRepository) ([]domainTransaction.Transaction, error) {
+func CreateTransactionCommandHandler(command CreateTransactionsCommand, usersGroupsRepository members.UsersGroupRepository, transactionsRepository domainTransaction.TransactionsRepository, usersRepository domainUsers.UserRepository) ([]domainTransaction.Transaction, error) {
 	transaction, err := domainTransaction.New(command.Description, command.PayedBY,
 		command.PayedBY == command.UserID, command.Category, command.Amount, command.Type,
 		command.GroupID, command.UserID)
@@ -17,7 +19,7 @@ func CreateTransactionCommandHandler(command CreateTransactionsCommand, usersGro
 	}
 
 	if ok := isIndividualTransaction(command); ok {
-		return handleSingleTransaction(transaction, transactionsRepository)
+		return handleSingleTransaction(transaction, transactionsRepository, usersRepository)
 	}
 
 	transactions := []domainTransaction.Transaction{}
@@ -51,9 +53,20 @@ func isIndividualTransaction(command CreateTransactionsCommand) bool {
 	return command.GroupID == ""
 }
 
-func handleSingleTransaction(transaction domainTransaction.Transaction, transactionsRepository domainTransaction.TransactionsRepository) ([]domainTransaction.Transaction, error) {
+func handleSingleTransaction(transaction domainTransaction.Transaction, transactionsRepository domainTransaction.TransactionsRepository, usersRepository domainUsers.UserRepository) ([]domainTransaction.Transaction, error) {
 	transaction.AlreadyPayed = true
 	err := transactionsRepository.SaveOne(transaction)
+	if err != nil {
+		return nil, err
+	}
+	amount := transaction.Amount.Val
+	if transaction.Type.Val == transactionVals.TransactionTypeSpending {
+		transaction.Amount.Val = -amount
+	}
+	err = usersRepository.UpdateCurrentBalance(transaction.UserId.Val, transaction.Amount.Val)
+	if err != nil {
+		return nil, err
+	}
 
 	return []domainTransaction.Transaction{transaction}, err
 

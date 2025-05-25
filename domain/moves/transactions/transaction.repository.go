@@ -6,7 +6,7 @@ import (
 
 type TransactionsRepository interface {
 	SaveMany(transaction []Transaction) error
-	SaveOne(tramsaction Transaction) error
+	SaveOne(transaction Transaction) error
 	GetById(id string) (Transaction, error)
 	MarkAsPayed(id string) error
 	GetUserTransactions(userID string, from time.Time, to time.Time, category string) ([]*Transaction, error)
