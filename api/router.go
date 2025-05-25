@@ -52,7 +52,7 @@ func Router(app *App) *gin.Engine {
 	router.Use(rateLimiter, gin.Recovery())
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "https://v0-personal-finance-app-xi-fawn.vercel.app/"}, // origen de tu frontend
+		AllowOrigins:     []string{"http://localhost:3000", "https://v0-personal-finance-app-xi-fawn.vercel.app"}, // origen de tu frontend
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
