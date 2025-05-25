@@ -99,14 +99,20 @@ func main() {
 		})
 	})
 
-	app.StartCrons()
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // fallback para local
+	}
+
 	s := &http.Server{
-		Addr:           ":8080",
+		Addr:           ":" + port,
 		Handler:        router,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
+
+	app.StartCrons()
 
 	s.ListenAndServe()
 }
