@@ -21,6 +21,11 @@ import (
 )
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Fatalf("App panicked: %v", r)
+		}
+	}()
 
 	err := godotenv.Load(".env.local")
 	if err != nil {
@@ -118,10 +123,4 @@ func main() {
 		log.Fatalf("❌ Server failed: %v", err)
 	}
 	app.StartCrons()
-
-	defer func() {
-		if r := recover(); r != nil {
-			log.Fatalf("App panicked: %v", r)
-		}
-	}()
 }
