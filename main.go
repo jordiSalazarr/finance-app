@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -114,5 +115,16 @@ func main() {
 
 	app.StartCrons()
 
-	s.ListenAndServe()
+	err = s.ListenAndServe()
+	if err != nil {
+		log.Fatalf("Error starting server: %v", err)
+		os.Exit(1)
+		return
+	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			log.Fatalf("App panicked: %v", r)
+		}
+	}()
 }
