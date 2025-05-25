@@ -48,7 +48,7 @@ func rateLimiter(c *gin.Context) {
 func Router(app *App) *gin.Engine {
 
 	router := gin.Default()
-	router.Use(rateLimiter)
+	router.Use(rateLimiter, gin.Recovery())
 
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"}, // origen de tu frontend

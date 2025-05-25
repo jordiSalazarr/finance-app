@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"time"
 
@@ -107,20 +106,10 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080" // fallback para local
+		port = "8080"
+	}
+	if err := router.Run(":" + port); err != nil {
+		log.Panicf("error: %s", err)
 	}
 
-	s := &http.Server{
-		Addr:           "0.0.0.0:" + port,
-		Handler:        router,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
-		MaxHeaderBytes: 1 << 20,
-	}
-
-	log.Printf("🚀 Starting server on 0.0.0.0:%s\n", port)
-	if err := s.ListenAndServe(); err != nil {
-		log.Fatalf("❌ Server failed: %v", err)
-	}
-	app.StartCrons()
 }
