@@ -28,12 +28,13 @@ func main() {
 
 	err := godotenv.Load(".env.local")
 	if err != nil {
+		log.Fatal("Error loading .env file")
 		os.Exit(1)
 		return
 	}
 
 	db, err := gorm.Open(mysql.New(mysql.Config{
-		DSN:                       os.Getenv("DATABSE_URL"),
+		DSN:                       os.Getenv("DATABASE_URL"),
 		DefaultStringSize:         256,
 		DisableDatetimePrecision:  true,
 		DontSupportRenameIndex:    true,
@@ -41,7 +42,8 @@ func main() {
 		SkipInitializeWithVersion: false,
 	}), &gorm.Config{})
 	if err != nil {
-		fmt.Print(err.Error())
+		log.Fatal("no db")
+
 		os.Exit(1)
 		return
 	}

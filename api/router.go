@@ -46,6 +46,7 @@ func rateLimiter(c *gin.Context) {
 	c.Next()
 }
 func Router(app *App) *gin.Engine {
+	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
 	router.Use(rateLimiter, gin.Recovery())
