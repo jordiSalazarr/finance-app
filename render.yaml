@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: finance-api
+    runtime: go
+    buildCommand: ""
+    startCommand: "./main"
+    envVars:
+      - key: PORT
+        value: 10000
+    autoDeploy: true
