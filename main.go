@@ -106,21 +106,18 @@ func main() {
 	}
 
 	s := &http.Server{
-		Addr:           ":" + port,
+		Addr:           "0.0.0.0:" + port,
 		Handler:        router,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	app.StartCrons()
-
-	err = s.ListenAndServe()
-	if err != nil {
-		log.Fatalf("Error starting server: %v", err)
-		os.Exit(1)
-		return
+	log.Printf("🚀 Starting server on 0.0.0.0:%s\n", port)
+	if err := s.ListenAndServe(); err != nil {
+		log.Fatalf("❌ Server failed: %v", err)
 	}
+	app.StartCrons()
 
 	defer func() {
 		if r := recover(); r != nil {
