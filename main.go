@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"time"
 
 	"finances.jordis.golang/api"
@@ -14,24 +15,29 @@ import (
 	jwtService "finances.jordis.golang/services/jwt"
 	mail_service "finances.jordis.golang/services/mail"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
+func ConfigRuntime() {
+	nuCPU := runtime.NumCPU()
+	runtime.GOMAXPROCS(nuCPU)
+	fmt.Printf("Running with %d CPUs\n", nuCPU)
+}
 func main() {
+	ConfigRuntime()
 	defer func() {
 		if r := recover(); r != nil {
 			log.Fatalf("App panicked: %v", r)
 		}
 	}()
 
-	err := godotenv.Load(".env.local")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-		os.Exit(1)
-		return
-	}
+	// err := godotenv.Load(".env.local")
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// 	os.Exit(1)
+	// 	return
+	// }
 
 	db, err := gorm.Open(mysql.New(mysql.Config{
 		DSN:                       os.Getenv("DATABASE_URL"),
