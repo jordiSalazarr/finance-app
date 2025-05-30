@@ -15,11 +15,15 @@ type GroupCreatedResponse struct {
 }
 
 func (app *App) CreateGroup(c *gin.Context) {
-
+	userId, exists := GetUserIdFromRequest(c)
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "User ID not found in request",
+		})
+		return
+	}
 	var input struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		UserID      string `json:"user_id"`
+		Name string `json:"name"`
 	}
 
 	err := c.BindJSON(&input)
@@ -31,9 +35,8 @@ func (app *App) CreateGroup(c *gin.Context) {
 	}
 
 	command := groups_useCases.CreateGroupCommand{
-		Name:        input.Name,
-		Description: input.Description,
-		CreatedBy:   input.UserID,
+		Name:      input.Name,
+		CreatedBy: userId,
 	}
 
 	group, err := groups_useCases.CreateGroupcommandHandler(command, app.GroupsRepo, app.UsersGroupsRepo)
@@ -45,10 +48,9 @@ func (app *App) CreateGroup(c *gin.Context) {
 	}
 
 	groupRespnse := GroupCreatedResponse{
-		Pk:          group.Pk.Val,
-		Name:        group.Name.Val,
-		Description: group.Description.Val,
-		Secret:      group.Secret.Val,
+		Pk:     group.Pk.Val,
+		Name:   group.Name.Val,
+		Secret: group.Secret.Val,
 	}
 
 	c.JSON(http.StatusCreated, gin.H{

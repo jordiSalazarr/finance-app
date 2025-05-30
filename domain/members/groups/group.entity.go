@@ -8,22 +8,16 @@ import (
 )
 
 type Group struct {
-	Pk          domain.UUID
-	Name        groupsVals.Name
-	Description groupsVals.Description
-	Secret      groupsVals.Secret
-	Created_by  domain.UUID
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	Pk         domain.UUID
+	Name       groupsVals.Name
+	Secret     groupsVals.Secret
+	Created_by domain.UUID
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
-func NewGroup(nameStr string, descriptionStr string, createdBy domain.UUID) (Group, error) {
+func NewGroup(nameStr string, createdBy domain.UUID) (Group, error) {
 	name, err := groupsVals.NewGroupName(nameStr)
-	if err != nil {
-		return Group{}, err
-	}
-
-	description, err := groupsVals.NewGroupDescription(descriptionStr)
 	if err != nil {
 		return Group{}, err
 	}
@@ -33,13 +27,12 @@ func NewGroup(nameStr string, descriptionStr string, createdBy domain.UUID) (Gro
 	createdAt, updatedAt := time.Now(), time.Now()
 
 	return Group{
-		Pk:          pk,
-		Name:        name,
-		Description: description,
-		Secret:      secret,
-		Created_by:  createdBy,
-		CreatedAt:   createdAt,
-		UpdatedAt:   updatedAt,
+		Pk:         pk,
+		Name:       name,
+		Secret:     secret,
+		Created_by: createdBy,
+		CreatedAt:  createdAt,
+		UpdatedAt:  updatedAt,
 	}, nil
 
 }

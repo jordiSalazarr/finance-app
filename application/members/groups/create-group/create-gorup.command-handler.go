@@ -23,7 +23,7 @@ func CreateGroupcommandHandler(command CreateGroupCommand, groupsRepository doma
 	user_id := domain.UUID{
 		Val: command.CreatedBy,
 	}
-	group, err := domainGroups.NewGroup(command.Name, command.Description, user_id)
+	group, err := domainGroups.NewGroup(command.Name, user_id)
 	if err != nil {
 		return domainGroups.Group{}, err
 	}
