@@ -7,20 +7,31 @@ import (
 	domainGroups "finances.jordis.golang/domain/members/groups"
 )
 
-func GetUserGroupsQueryHandler(query GetUserGroupsQuery, groupRepo domainGroups.GroupRepository, usersGroupsRepository members.UsersGroupRepository) ([]*domainGroups.Group, error) {
-	groupsIds, err := usersGroupsRepository.GetUserGroups(query.UserId)
+func GetUserGroupsQueryHandler(query GetUserGroupsQuery, groupRepo domainGroups.GroupRepository, usersGroupsRepository members.UsersGroupRepository) ([]domainGroups.Group, error) {
+	dbgroups, err := usersGroupsRepository.GetUserGroups(query.UserId)
 	if err != nil {
 		return nil, err
 	}
+	if len(dbgroups) == 0 {
+		return nil, nil
+	}
 
-	var groups []*domainGroups.Group
-	for _, id := range groupsIds {
-		group, err := groupRepo.GetById(id)
+	groups := make([]domainGroups.Group, len(dbgroups))
+	for i, group := range dbgroups {
+		domainGroup, err := domainGroups.FromExistingGroup(
+			group.PK,
+			group.Name,
+			group.Secret,
+			group.CreatedBY,
+			group.CreatedAt,
+			group.UpdatedAt,
+		)
 		if err != nil {
-			fmt.Print(err.Error())
-			continue
+			fmt.Printf("Error creating domain group from existing group: %v\n", err)
+		} else {
+			groups[i] = domainGroup
 		}
-		groups = append(groups, &group)
+
 	}
 
 	return groups, nil
