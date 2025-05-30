@@ -42,13 +42,12 @@ func (app *App) GetUserGroupsHandler(c *gin.Context) {
 	var groupsResponse []GroupRespnsoDTO
 	for _, group := range groups {
 		groupRes := GroupRespnsoDTO{
-			Pk:          group.Pk.Val,
-			Name:        group.Name.Val,
-			Description: group.Description.Val,
-			Secret:      group.Secret.Val,
-			Created_by:  group.Created_by.Val,
-			CreatedAt:   group.CreatedAt,
-			UpdatedAt:   group.UpdatedAt,
+			Pk:         group.Pk.Val,
+			Name:       group.Name.Val,
+			Secret:     group.Secret.Val,
+			Created_by: group.Created_by.Val,
+			CreatedAt:  group.CreatedAt,
+			UpdatedAt:  group.UpdatedAt,
 		}
 		groupsResponse = append(groupsResponse, groupRes)
 	}
