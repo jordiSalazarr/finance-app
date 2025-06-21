@@ -120,7 +120,7 @@ func (app *App) GetUserTransactions(c *gin.Context) {
 		Category string              `form:"category"`
 	}
 
-	err := c.BindQuery(&input)
+	err := c.ShouldBindQuery(&input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -164,7 +164,7 @@ func (app *App) GetGroupTransactions(c *gin.Context) {
 		Category string              `form:"category"`
 	}
 
-	err := c.BindQuery(&input)
+	err := c.ShouldBindQuery(&input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"err": err.Error(),

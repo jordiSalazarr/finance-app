@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"time"
 
 	logger "finances.jordis.golang/application/services"
 	"finances.jordis.golang/domain/members"
@@ -35,7 +34,7 @@ type App struct {
 	DB *gorm.DB
 }
 
-var limiter = rate.NewLimiter(1, 5)
+var limiter = rate.NewLimiter(100, 5)
 
 func rateLimiter(c *gin.Context) {
 	if !limiter.Allow() {
@@ -49,15 +48,13 @@ func Router(app *App) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
-	router.Use(rateLimiter, gin.Recovery())
-
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "https://v0-personal-finance-app-xi-fawn.vercel.app"}, // origen de tu frontend
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowOrigins:     []string{"*"},
 		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
+		AllowMethods:     []string{"PUT", "PATCH", "POST", "OPTION", "GET", "DELETE"},
+		AllowHeaders:     []string{"Authorization", "x-api-key", "Content-Type"},
 	}))
+	router.Use(rateLimiter, gin.Recovery())
 
 	{
 		auth := router.Group("/auth")
